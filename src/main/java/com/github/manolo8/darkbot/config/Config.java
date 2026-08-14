@@ -16,6 +16,7 @@ import com.github.manolo8.darkbot.gui.tree.editors.CharacterEditor;
 import com.github.manolo8.darkbot.gui.tree.utils.NpcTableModel;
 import com.github.manolo8.darkbot.gui.tree.utils.TableHelpers;
 import com.github.manolo8.darkbot.utils.OSUtil;
+import com.github.manolo8.darkbot.utils.Time;
 import eu.darkbot.api.config.annotations.Configuration;
 import eu.darkbot.api.config.annotations.Dropdown;
 import eu.darkbot.api.config.annotations.Number;
@@ -239,6 +240,11 @@ public class Config implements eu.darkbot.api.config.legacy.Config {
             public @Option boolean USE_3D = false;
             public @Option boolean USE_PROXY = false;
             public @Option boolean CLEAR_CACHE_ON_STUCK = true;
+            public @Option @Number(min = 2, max = 30, step = 1) int STUCK_LOADING_TIMEOUT_MINUTES = 12;
+
+            public long getStuckLoadingTimeoutMillis() {
+                return (long) STUCK_LOADING_TIMEOUT_MINUTES * Time.MINUTE;
+            }
 
             public int width = 1280;
             public int height = 800;

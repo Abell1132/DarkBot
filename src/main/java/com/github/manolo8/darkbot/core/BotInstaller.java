@@ -1,5 +1,6 @@
 package com.github.manolo8.darkbot.core;
 
+import com.github.manolo8.darkbot.Main;
 import com.github.manolo8.darkbot.core.api.Capability;
 import com.github.manolo8.darkbot.core.itf.Manager;
 import com.github.manolo8.darkbot.core.utils.Lazy;
@@ -134,14 +135,15 @@ public class BotInstaller implements API.Singleton {
         // Background only api ignores invalid checks
         if (API.hasCapability(Capability.BACKGROUND_ONLY)) return;
 
+        long timeout = Main.INSTANCE.config.BOT_SETTINGS.API_CONFIG.getStuckLoadingTimeoutMillis();
         if (API.hasCapability(Capability.HANDLER_INTERNET_READ_TIME)) {
             long lastRead = API.lastInternetReadTime();
             if (lastInternetRead != lastRead) {
                 lastInternetRead = lastRead;
-                invalidTimer.activate(60_000); // decrypting of main.swf can be tough
-            } else if (!invalidTimer.isArmed()) invalidTimer.activate(60_000);
+                invalidTimer.activate(timeout);
+            } else if (!invalidTimer.isArmed()) invalidTimer.activate(timeout);
 
-        } else if (!invalidTimer.isArmed()) invalidTimer.activate(150_000); // 2.5 min
+        } else if (!invalidTimer.isArmed()) invalidTimer.activate(timeout);
 
         // timer is disarmed, so is potentially stuck on loading
         if (invalidTimer.tryDisarm()) {
@@ -149,7 +151,8 @@ public class BotInstaller implements API.Singleton {
                 API.clearCache(".*");
 
             API.handleRefresh(true);
-            System.out.println("Triggering refresh: stuck at loading screen for too long!");
+            System.out.println("Triggering refresh: stuck at loading screen for too long " +
+                    "(timeout: " + Main.INSTANCE.config.BOT_SETTINGS.API_CONFIG.STUCK_LOADING_TIMEOUT_MINUTES + " min)!");
         }
     }
 }

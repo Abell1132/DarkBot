@@ -247,8 +247,10 @@ public class GuiManager implements Manager, GameScreenAPI {
     }
 
     private void checkInvalid() {
-        if (System.currentTimeMillis() - validTime > 90_000 + (main.hero.map.id == -1 ? 180_000 : 0)) {
-            triggerRefresh("Triggering refresh: gui manger was invalid for too long. " +
+        if (System.currentTimeMillis() - validTime >
+                main.config.BOT_SETTINGS.API_CONFIG.getStuckLoadingTimeoutMillis()) {
+            triggerRefresh("Triggering refresh: gui manger was invalid for too long " +
+                    "(timeout: " + main.config.BOT_SETTINGS.API_CONFIG.STUCK_LOADING_TIMEOUT_MINUTES + " min). " +
                     "(Make sure your hp fills up, equip an auto-repair CPU if you're missing one)", true);
         }
     }
