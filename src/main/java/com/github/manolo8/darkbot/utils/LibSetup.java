@@ -72,11 +72,15 @@ public class LibSetup {
         if (libPath == null) libPath = Paths.get(lib.path);
 
         // DEVELOPMENT ONLY:
-        // Preserve our locally-built Tanos library while testing.
-        if ("libdo_lib.so".equals(libPath.getFileName().toString())
+        // Preserve our locally-built Tanos libraries while testing.
+        String libName = libPath.getFileName().toString();
+
+        if (("libdo_lib.so".equals(libName)
+                || "DarkTanos.so".equals(libName))
                 && Files.exists(libPath)) {
             System.out.println(
-                    "DEV: preserving local libdo_lib.so, skipping library updater");
+                    "DEV: preserving local Tanos library " + libName
+                            + ", skipping library updater");
             return false;
         }
 
