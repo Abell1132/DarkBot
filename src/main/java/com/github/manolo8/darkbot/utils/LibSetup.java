@@ -71,6 +71,15 @@ public class LibSetup {
         if (lib == null) return false;
         if (libPath == null) libPath = Paths.get(lib.path);
 
+        // DEVELOPMENT ONLY:
+        // Preserve our locally-built Tanos library while testing.
+        if ("libdo_lib.so".equals(libPath.getFileName().toString())
+                && Files.exists(libPath)) {
+            System.out.println(
+                    "DEV: preserving local libdo_lib.so, skipping library updater");
+            return false;
+        }
+
         if (Files.exists(libPath)) {
             try {
                 String sha = FileUtils.calcSHA256(libPath);
