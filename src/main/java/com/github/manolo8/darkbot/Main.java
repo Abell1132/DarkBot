@@ -54,6 +54,9 @@ import eu.darkbot.api.managers.BotAPI;
 import eu.darkbot.api.managers.EventBrokerAPI;
 import org.jetbrains.annotations.ApiStatus;
 
+import com.github.manolo8.darkbot.utils.AuthAPI;
+import com.github.manolo8.darkbot.utils.AuthProvider;
+
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -143,8 +146,10 @@ public class Main extends Thread implements PluginListener, BotAPI {
         StartupChecks.checkJavaVersion(params);
         StartupChecks.checkUniqueInstance(params); //method require min java 9
 
-        VerifierChecker.getAuthApi().setupAuth();
-        this.pluginAPI.addInstance(VerifierChecker.getAuthApi());
+        AuthAPI authApi = AuthProvider.get();
+
+        authApi.setupAuth();
+        this.pluginAPI.addInstance(authApi);
 
         this.starManager     = pluginAPI.requireInstance(StarManager.class);
         this.mapManager      = pluginAPI.requireInstance(MapManager.class);
