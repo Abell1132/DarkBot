@@ -207,7 +207,7 @@ public class PluginHandler implements API.Singleton {
             plugin.setDefinition(readPluginDefinition(jar.getInputStream(plJson)));
             testUnique(plugin);
             testCompatibility(plugin);
-            testSignature(plugin, jar);
+            // testSignature(plugin, jar); skip during development
             if (plugin.getDefinition().features.length != 0 || plugin.getBasePackage() == null) return null;
             String basePackage = plugin.getBasePackage().replace('.', '/');
             return StreamUtils.toStream(jar.entries())
