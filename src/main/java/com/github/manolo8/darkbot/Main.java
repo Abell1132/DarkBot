@@ -188,7 +188,7 @@ public class Main extends Thread implements PluginListener, BotAPI {
         this.pluginHandler.addListener(this);
 
         this.form = new MainGui(this);
-        this.pluginUpdater.scheduleUpdateChecker();
+        // this.pluginUpdater.scheduleUpdateChecker(); // DEV: local plugin builds are managed manually.
 
         if (configManager.getConfigFailed())
             Popups.of("Error", I18n.get("bot.issue.config_load_failed"), JOptionPane.ERROR_MESSAGE).showAsync();

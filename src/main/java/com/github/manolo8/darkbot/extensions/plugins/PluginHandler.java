@@ -133,15 +133,18 @@ public class PluginHandler implements API.Singleton {
             }
 
             FileUtils.ensureDirectoryExists(PLUGIN_PATH);
-            for (File plugin : getJars(PLUGIN_UPDATE_FOLDER)) {
-                Path plPath = plugin.toPath();
-                try {
-                    Files.move(plPath, PLUGIN_PATH.resolve(plPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-                } catch (Exception e) {
-                    LOADING_EXCEPTIONS.add(new PluginException("Failed to update plugin: " + plPath.getFileName(), e));
-                    e.printStackTrace();
-                }
-            }
+            // DEV: locally built plugins in plugins/ are authoritative.
+            // Do not apply staged plugin updates from plugins/updates/.
+            //
+            // for (File plugin : getJars(PLUGIN_UPDATE_FOLDER)) {
+            //     Path plPath = plugin.toPath();
+            //     try {
+            //         Files.move(plPath, PLUGIN_PATH.resolve(plPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+            //     } catch (Exception e) {
+            //         LOADING_EXCEPTIONS.add(new PluginException("Failed to update plugin: " + plPath.getFileName(), e));
+            //         e.printStackTrace();
+            //     }
+            // }
             try {
                 loadPlugins(getJars(PLUGIN_FOLDER), previousPlugins);
             } catch (Exception e) {

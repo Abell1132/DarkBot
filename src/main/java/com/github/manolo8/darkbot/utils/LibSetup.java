@@ -71,6 +71,11 @@ public class LibSetup {
         if (lib == null) return false;
         if (libPath == null) libPath = Paths.get(lib.path);
 
+        // Plugin destinations must not be updated through the library downloader either.
+        if (Boolean.getBoolean("darkbot.devAuthEnabled")
+                && libPath.toAbsolutePath().normalize().startsWith(
+                        Paths.get("plugins").toAbsolutePath().normalize())) return false;
+
         // DEVELOPMENT ONLY:
         // Preserve our locally-built Tanos libraries while testing.
         String libName = libPath.getFileName().toString();

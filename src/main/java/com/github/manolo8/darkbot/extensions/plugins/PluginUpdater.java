@@ -35,6 +35,7 @@ public class PluginUpdater implements API.Singleton {
     }
 
     public void scheduleUpdateChecker() {
+        if (Boolean.getBoolean("darkbot.devAuthEnabled")) return;
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -61,6 +62,7 @@ public class PluginUpdater implements API.Singleton {
     }
 
     public void checkUpdates() {
+        if (Boolean.getBoolean("darkbot.devAuthEnabled")) return;
         UPDATING_EXCEPTIONS.clear();
         new SwingWorker<Void, Void>() {
             @Override
@@ -70,6 +72,7 @@ public class PluginUpdater implements API.Singleton {
 
             @Override
             protected Void doInBackground() {
+                if (Boolean.getBoolean("darkbot.devAuthEnabled")) return null;
                 for (Plugin plugin : pluginHandler.LOADED_PLUGINS) {
                     plugin.getUpdateIssues().getIssues()
                             .removeIf(pl -> pl.getMessageKey().equals(DOWNLOAD_FAILED));
@@ -112,6 +115,7 @@ public class PluginUpdater implements API.Singleton {
     }
 
     private PluginDefinition findUpdate(PluginDefinition current) throws IOException {
+        if (Boolean.getBoolean("darkbot.devAuthEnabled")) return current;
         if (current.update == null) return current;
         PluginDefinition next = pluginHandler.readPluginDefinition(current.update.openStream());
         if (current.version.compareTo(next.version) >= 0) return current;
@@ -120,10 +124,12 @@ public class PluginUpdater implements API.Singleton {
     }
 
     public void update(Plugin plugin) {
+        if (Boolean.getBoolean("darkbot.devAuthEnabled")) return;
         new UpdateTask(plugin).execute();
     }
 
     public void updateAll() {
+        if (Boolean.getBoolean("darkbot.devAuthEnabled")) return;
         new UpdateAllTask().execute();
     }
 
@@ -155,6 +161,7 @@ public class PluginUpdater implements API.Singleton {
 
         @Override
         protected Void doInBackground() {
+            if (Boolean.getBoolean("darkbot.devAuthEnabled")) return null;
             updateTasks.forEach(SwingWorker::execute);
             updateTasks.forEach(UpdateTask::waitUntilDone);
 
@@ -212,12 +219,15 @@ public class PluginUpdater implements API.Singleton {
 
         @Override
         protected Void doInBackground() throws Exception {
+            if (Boolean.getBoolean("darkbot.devAuthEnabled")) return null;
             publish(PluginCard.UpdateStatus.STARTING);
 
             if (plugin.getUpdateDefinition() == null)
                 plugin.setUpdateDefinition(findUpdate(plugin.getDefinition()));
 
+            if (Boolean.getBoolean("darkbot.devAuthEnabled")) return null;
             try (InputStream is = plugin.getUpdateDefinition().download.openConnection().getInputStream()) {
+                if (Boolean.getBoolean("darkbot.devAuthEnabled")) return null;
                 publish(PluginCard.UpdateStatus.SAVING_OLD);
 
                 FileUtils.ensureDirectoryExists(PluginHandler.PLUGIN_OLD_PATH);

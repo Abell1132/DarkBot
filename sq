@@ -1,0 +1,90 @@
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m263[m[36m-[m        // For alphas, ensure always newer
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m264[m[36m-[m        if (Main.VERSION.isAlpha()) return true;
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m265[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m266[m[36m-[m        // Alternatively, check that the general version is the same
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m267[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m268[m[36m-[m        Version simpleMain = new Version(Main.VERSION.getMajor(), Main.VERSION.getMinor(), Main.VERSION.getPatch());
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m269[m[36m-[m        Version simpleVer = new Version(ver.getMajor(), ver.getMinor(), ver.getPatch());
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m270[m[36m-[m        return simpleMain.compareTo(simpleVer) > 0;
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m271[m[36m-[m    }
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m272[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m273[m[36m-[m    private void testSignature(Plugin plugin, JarFile jar) throws IOException {
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m274[m[36m-[m        try {
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m:[m[32m275[m[36m:[m            Boolean signatureValid = AuthAPI.getInstance().[1;31mcheckPluginJarSignature[m(jar);
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m276[m[36m-[m            if (signatureValid == null) plugin.getIssues().add(PLUGIN_NOT_SIGNED);
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m277[m[36m-[m            else if (!signatureValid) plugin.getIssues().add(UNKNOWN_SIGNATURE);
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m278[m[36m-[m        } catch (SecurityException e) {
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m279[m[36m-[m            plugin.getIssues().add(INVALID_SIGNATURE);
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m280[m[36m-[m        }
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m281[m[36m-[m    }
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m282[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m283[m[36m-[m    private boolean isFeature(String path) {
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m284[m[36m-[m        try {
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m285[m[36m-[m            Class<?> clazz = PLUGIN_CLASS_LOADER.loadClass(path);
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m286[m[36m-[m            return clazz.isAnnotationPresent(eu.darkbot.api.extensions.Feature.class) ||
+[35msrc/main/java/com/github/manolo8/darkbot/extensions/plugins/PluginHandler.java[m[36m-[m[32m287[m[36m-[m                   clazz.isAnnotationPresent(com.github.manolo8.darkbot.extensions.features.Feature.class);
+[36m--[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m46[m[36m-[m     * as long as the auth method is the same, and that no 2 players will share it.
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m47[m[36m-[m     * @return A unique string representing this user, null if no auth was done.
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m48[m[36m-[m     */
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m49[m[36m-[m    @Nullable
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m50[m[36m-[m    String getAuthId();
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m51[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m52[m[36m-[m    /**
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m53[m[36m-[m     * Checks if a jar file has been signed by an authorized key
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m54[m[36m-[m     * @param jarFile The jar file to check
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m55[m[36m-[m     * @throws IOException If the file can't be found or read.
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m56[m[36m-[m     * @return true if signed & known signature, null if not signed, false if signed by untrusted key.
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m57[m[36m-[m     */
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m:[m[32m58[m[36m:[m    Boolean [1;31mcheckPluginJarSignature[m(JarFile jarFile) throws IOException;
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m59[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/AuthAPI.java[m[36m-[m[32m60[m[36m-[m}
+[36m--[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m89[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m90[m[36m-[m    @Override
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m91[m[36m-[m    @Nullable
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m92[m[36m-[m    public String getAuthId() {
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m93[m[36m-[m        if (!isAuthenticated()) {
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m94[m[36m-[m            return null;
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m95[m[36m-[m        }
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m96[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m97[m[36m-[m        return authId;
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m98[m[36m-[m    }
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m99[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m100[m[36m-[m    @Override
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m:[m[32m101[m[36m:[m    public Boolean [1;31mcheckPluginJarSignature[m(JarFile jarFile)
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m102[m[36m-[m            throws IOException {
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m103[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m104[m[36m-[m        /*
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m105[m[36m-[m         * Auth-state simulation is intentionally independent from
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m106[m[36m-[m         * plugin signature validation.
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m107[m[36m-[m         */
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m108[m[36m-[m        return null;
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m109[m[36m-[m    }
+[35msrc/main/java/com/github/manolo8/darkbot/utils/DevAuthAPI.java[m[36m-[m[32m110[m[36m-[m}
+[36m--[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m53[m[36m-[m            // Check the class before creating instance
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m54[m[36m-[m            if (className.contains("AuthAPIImpl")) VerifierChecker.verifyClass(cl);
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m55[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m56[m[36m-[m            return createInstance(cl);
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m57[m[36m-[m        } catch (MalformedURLException | ClassNotFoundException e) {
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m58[m[36m-[m            e.printStackTrace();
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m59[m[36m-[m            throw new RuntimeException("Failed to find class: " + className);
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m60[m[36m-[m        }
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m61[m[36m-[m    }
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m62[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m63[m[36m-[m    private static void validateJar(Path path) {
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m64[m[36m-[m        try (JarFile jar = new JarFile(path.toFile())) {
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m:[m[32m65[m[36m:[m            Boolean valid = AuthAPI.getInstance().[1;31mcheckPluginJarSignature[m(jar);
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m66[m[36m-[m            if (valid == null || !valid)
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m67[m[36m-[m                throw new SecurityException("Failed to verify signature of " + path);
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m68[m[36m-[m        } catch (IOException e) {
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m69[m[36m-[m            e.printStackTrace();
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m70[m[36m-[m            throw new RuntimeException("Failed verify jar file: " + path);
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m71[m[36m-[m        }
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m72[m[36m-[m    }
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m73[m[36m-[m
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m74[m[36m-[m    public static <T> T createInstance(Class<T> clazz) {
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m75[m[36m-[m        return createInstance(clazz, null, null);
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m76[m[36m-[m    }
+[35msrc/main/java/com/github/manolo8/darkbot/utils/ReflectionUtils.java[m[36m-[m[32m77[m[36m-[m
