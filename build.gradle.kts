@@ -78,6 +78,10 @@ dependencies {
 tasks.withType<JavaCompile> { options.encoding = "UTF-8" }
 tasks.withType<JavaExec> { systemProperty("file.encoding", "UTF-8") }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 tasks.wrapper {
     gradleVersion = "8.6"
 
