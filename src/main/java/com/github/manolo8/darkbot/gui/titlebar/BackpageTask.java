@@ -55,9 +55,18 @@ public class BackpageTask extends Thread {
     }
 
     public static Process createBrowser(String... args) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder(BACKPAGE_PATH.resolve(EXECUTABLE_NAME).toAbsolutePath().toString());
+        return browserBuilder(BACKPAGE_PATH.resolve(EXECUTABLE_NAME), OSUtil.isLinux(), args).start();
+    }
+
+    static ProcessBuilder browserBuilder(Path executable, boolean linux, String... args) {
+        ProcessBuilder builder = new ProcessBuilder(executable.toAbsolutePath().toString());
+        // Electron checks the sandbox helper before running the app's JavaScript.
+        // This portable Linux package cannot use its non-setuid chrome-sandbox.
+        if (linux) builder.command().add("--no-sandbox");
         builder.command().addAll(List.of(args));
-        return builder.start();
+        // Keep stdout separate: captcha callers parse it for their result.
+        builder.redirectError(ProcessBuilder.Redirect.INHERIT);
+        return builder;
     }
 
     private static ReleaseInfo getLatestRelease() throws IOException, JsonParseException {
@@ -66,23 +75,32 @@ public class BackpageTask extends Thread {
 
     @Override
     public void run() {
-        if (main.backpage.isInstanceValid()) { // open backpage even if sid is KO
-            try {
+        try {
+            if (main.backpage.isInstanceValid()) { // open backpage even if sid is KO
                 if (canRun()) {
-                    createBrowser("--sid", main.backpage.getSid(),
+                    int exitCode = createBrowser("--sid", main.backpage.getSid(),
                             "--url", main.backpage.getInstanceURI().toString())
                             .waitFor();
+                    if (exitCode != 0)
+                        throw new IOException("Backpage browser exited with code " + exitCode
+                                + ". See the application log for details.");
                 }
-            } catch (InterruptedException | IOException e) {
-                e.printStackTrace();
+            } else {
+                Popups.of("Backpage",
+                                "No SID available, wait until client loads and try again.",
+                                JOptionPane.INFORMATION_MESSAGE)
+                        .showAsync();
             }
-        } else {
-          Popups.of("Backpage",
-                          "No SID available, wait until client loads and try again.",
-                          JOptionPane.INFORMATION_MESSAGE)
-                  .showAsync();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Popups.of("Backpage exception", e.getLocalizedMessage())
+                    .messageType(JOptionPane.ERROR_MESSAGE)
+                    .showAsync();
+        } finally {
+            SwingUtilities.invokeLater(() -> button.setEnabled(true));
         }
-        SwingUtilities.invokeLater(() -> button.setEnabled(true));
     }
 
     private boolean canRun() {
