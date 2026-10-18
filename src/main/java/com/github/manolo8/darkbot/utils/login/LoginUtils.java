@@ -42,7 +42,7 @@ public class LoginUtils {
             }
         }
 
-        LoginForm panel = new LoginForm();
+        LoginForm panel = new LoginForm(params.has(StartupParams.LaunchArg.LOGIN_SAVED));
 
         Popups.of("Login", panel)
                 .options()

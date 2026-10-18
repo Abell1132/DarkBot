@@ -26,6 +26,7 @@ public class StartupParams implements API.Singleton {
          * Example usage: {@code -login C:\Users\Owner\login.properties}
          */
         LOGIN(AutoLoginProps::new),
+        LOGIN_SAVED, /** Try the first saved account once, keeping the login dialog on failure. */
         START, /** Auto-start the bot */
         NO_OP, /** Run the bot in no-op mode (no-op api) */
         CONFIG(s -> s), /** Start the bot with a specific config */

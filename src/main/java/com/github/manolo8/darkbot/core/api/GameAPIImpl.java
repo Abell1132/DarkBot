@@ -194,6 +194,14 @@ public class GameAPIImpl<
         interaction.tick();
         direct.tick();
 
+        // tick() runs after BotInstaller has initialized the game, unlike isValid(),
+        // which can succeed while Electron is still replacing its loading window.
+        if (!autoHidden && params.getAutoHide()) {
+            setVisible(false, Main.INSTANCE.config.BOT_SETTINGS.API_CONFIG.FULLY_HIDE_API);
+            autoHidden = true;
+            System.out.println("Viewer hidden after game initialization (--hide)");
+        }
+
         if (hasCapability(Capability.HANDLER_CLEAR_RAM) && clearRamTimer.tryActivate())
             emptyWorkingSet();
     }
@@ -260,10 +268,6 @@ public class GameAPIImpl<
             becomeValidTimer.disarm();
         }
 
-        if (!autoHidden && isValid && params.getAutoHide()) {
-            setVisible(false, Main.INSTANCE.config.BOT_SETTINGS.API_CONFIG.FULLY_HIDE_API);
-            autoHidden = true;
-        }
         return isValid;
     }
 

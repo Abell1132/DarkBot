@@ -9,6 +9,8 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.net.ssl.SSLHandshakeException;
 import javax.swing.*;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.util.List;
 
 public class LoginForm extends JPanel {
@@ -21,6 +23,10 @@ public class LoginForm extends JPanel {
     private final LoginData loginData = new LoginData();
 
     public LoginForm() {
+        this(false);
+    }
+
+    public LoginForm(boolean autoLoginSaved) {
         super(new MigLayout("wrap 2, ins 0", "[]10px:push[]", "[]8px[]"));
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
@@ -36,6 +42,20 @@ public class LoginForm extends JPanel {
         add(tabbedPane, "span 2, growx, height 112px!");
         add(infoLb, "gapleft 8px, grow 0");
         add(loginBtn, "gapright 8px");
+
+        if (autoLoginSaved && saved.selectDefaultLogin()) {
+            addHierarchyListener(new HierarchyListener() {
+                @Override
+                public void hierarchyChanged(HierarchyEvent event) {
+                    if ((event.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) == 0 || !isShowing()) return;
+                    // Run once, after the modal dialog is visible. Failures remain interactive.
+                    removeHierarchyListener(this);
+                    SwingUtilities.invokeLater(() -> {
+                        if (isShowing() && tabbedPane.getSelectedComponent() == saved) startLogin();
+                    });
+                }
+            });
+        }
     }
 
     public JButton getLoginBtn() {

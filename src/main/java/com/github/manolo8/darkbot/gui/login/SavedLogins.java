@@ -89,6 +89,12 @@ public class SavedLogins extends JPanel implements LoginScreen {
         return loaded ? model.getSize() : 0;
     }
 
+    public boolean selectDefaultLogin() {
+        if (getLogins() == 0) return false;
+        if (users.isSelectionEmpty()) users.setSelectedIndex(0);
+        return true;
+    }
+
     private void updateList() {
         if (!loaded) return; // Prevent list even trying
 
