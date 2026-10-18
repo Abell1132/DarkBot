@@ -11,6 +11,7 @@ import java.awt.*;
 public class MainTitleBar extends JMenuBar implements SimpleMouseListener {
 
     private final TitleFiller titleFiller = new TitleFiller();
+    private final VisibilityButton visibilityButton;
 
     public MainTitleBar(Main main, MainGui frame) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -26,13 +27,17 @@ public class MainTitleBar extends JMenuBar implements SimpleMouseListener {
         add(DiagnosticBar.create(main, frame));
 
         add(new HookButton(frame));
-        add(new VisibilityButton(main, frame));
+        add(visibilityButton = new VisibilityButton(main, frame));
         add(new PinButton(frame));
         add(new TrayButton(main, frame));
     }
 
     public void setInfo(String info) {
         this.titleFiller.title.setText(info);
+    }
+
+    public void hideViewerAfterStartup() {
+        if (visibilityButton.isSelected()) visibilityButton.doClick();
     }
 
     private static class TitleFiller extends Box.Filler {

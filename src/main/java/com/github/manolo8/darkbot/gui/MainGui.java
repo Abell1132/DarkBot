@@ -137,6 +137,10 @@ public class MainGui extends JFrame {
         configGui.updateConfigTreeListeners();
     }
 
+    public void hideViewerAfterStartup() {
+        titleBar.hideViewerAfterStartup();
+    }
+
     public void updateConfiguration() {
         mapDrawer.setup(main);
         configGui.setComponentData();

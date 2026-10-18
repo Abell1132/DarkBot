@@ -61,6 +61,7 @@ public class GameAPIImpl<
     protected int pid; // Used only if api supports ATTACH
     protected boolean initiallyShown;
     protected boolean autoHidden = false;
+    protected final Timer autoHideTimer = Timer.get(15 * Time.SECOND);
 
     private int refreshCount = 0;
     protected long lastFailedLogin;
@@ -98,7 +99,7 @@ public class GameAPIImpl<
         this.loginData = hasCapability(Capability.LOGIN) ? LoginUtils.performUserLogin(params) : null;
         main.backpage.setLoginData(loginData);
 
-        this.initiallyShown = hasCapability(Capability.INITIALLY_SHOWN) && !params.getAutoHide();
+        this.initiallyShown = hasCapability(Capability.INITIALLY_SHOWN);
         this.mapManager = main.mapManager;
 
         if (hasCapability(Capability.PROXY)) {
@@ -197,9 +198,12 @@ public class GameAPIImpl<
         // tick() runs after BotInstaller has initialized the game, unlike isValid(),
         // which can succeed while Electron is still replacing its loading window.
         if (!autoHidden && params.getAutoHide()) {
-            setVisible(false, Main.INSTANCE.config.BOT_SETTINGS.API_CONFIG.FULLY_HIDE_API);
-            autoHidden = true;
-            System.out.println("Viewer hidden after game initialization (--hide)");
+            if (!autoHideTimer.isArmed()) autoHideTimer.activate();
+            else if (autoHideTimer.isInactive()) {
+                autoHidden = true;
+                SwingUtilities.invokeLater(() -> Main.INSTANCE.getGui().hideViewerAfterStartup());
+                System.out.println("Hiding viewer after 15 seconds of initialized gameplay (--hide)");
+            }
         }
 
         if (hasCapability(Capability.HANDLER_CLEAR_RAM) && clearRamTimer.tryActivate())
@@ -266,6 +270,7 @@ public class GameAPIImpl<
             isValid = becomeValidTimer.isInactive();
         } else {
             becomeValidTimer.disarm();
+            if (!autoHidden) autoHideTimer.disarm();
         }
 
         return isValid;
